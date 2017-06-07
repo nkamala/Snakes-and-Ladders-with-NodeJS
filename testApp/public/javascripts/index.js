@@ -106,17 +106,17 @@ var snakesAndLadders = {
       newPos = found_pos.end;
       if (newPos < currPos) {
         //snake
-        this.printMsg("Snake bit you", divId);
+        //this.printMsg("Snake bit you", divId);
 
       }
       else {
         //ladder
-        this.printMsg("climb up the ladder", divId);
+        //this.printMsg("climb up the ladder", divId);
 
       }
       return newPos;
     }
-    this.printMsg("no snake or ladder", divId);
+   //this.printMsg("no snake or ladder", divId);
     return currPos;
 
 
