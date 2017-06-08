@@ -6,76 +6,39 @@ var request = require('supertest');
 
 describe('Snakes and Ladders', function() {
   describe('Roll Dice', function() {
-    it('random number is less than or equal to 6', function() {
-      var randomNumber = snakesAndLadders.rollDice();
-      assert.isAtMost(randomNumber, 6, 'random number is less than or equal to 6');
-    });
-    it('random number is greater than or equal to 1', function() {
-      var randomNumber = snakesAndLadders.rollDice();
-      assert.isAtLeast(randomNumber, 1, 'random number is greater than or equal to 1');
+    var randomNumber = snakesAndLadders.rollDice();
+    it('random number is between 1 and 6',function(){
+       console.log(randomNumber);
+       assert.isAtMost(randomNumber, 6, 'random number is less than or equal to 6');
+       assert.isAtLeast(randomNumber, 1, 'random number is greater than or equal to 1');
     });
   });
-  describe('Checking boundary conditions', function() {
-     before(function(){
-       snakesAndLadders.init();
-    });
-    it('new pos is greater than or equal 0', function() {
-      var newPos = snakesAndLadders.findPos(1,"roll1");
-      assert.isAtLeast(newPos, 1, 'new pos is greater than or equal to 0');
-    });
-    it('new pos is less than 106', function() {
-     var newPos = snakesAndLadders.findPos(99,"roll1");
-     assert.isAtMost(newPos, 105, 'new pos is less than 106');
-    });
-  });
-/*describe('Check a turn', function(){
-  it('should check if all the new positions are correct', function() {
-    var curPos = 50;
-    var rolledNumber = snakesAndLadders.rollDice();
-    var newPos = curPos + rolledNumber;
-    var checkPos = snakesAndLadders.findPos(newPos, "roll1");
-    console.log(curPos,rolledNumber,newPos,checkPos);
-    if(rolledNumber == 1){
-      expect(checkPos).to.equal(68);
-    }
-    else if(rolledNumber == 6){
-      expect(checkPos).to.equal(53);
-    }
-    else{
-      expect(checkPos).to.equal(newPos);
-    }
-  });
-});*/
-
-  describe('Check correctness of a cell', function(){
+  describe('Check for winner',function(){
     before(function(){
-     snakesAndLadders.init();
+      snakesAndLadders.init();
     });
-    [56,87,2,65,75,15].forEach(function(value){
-      it('Check if a randomly generated point is corretly identified', function(){
-        var checkPos = snakesAndLadders.findPos(value, "roll1");
-        console.log(value,checkPos);
-        var flag = 0;
-        for(i=0;i<snakesAndLadders.snakes.length;i++){
-          if(value == snakesAndLadders.snakes[i].start){
-            flag = 1;
-            assert.isBelow(checkPos,value,'It is a snake');
-            expect(checkPos).to.equal(snakesAndLadders.snakes[i].end);
-            console.log('This is a snake');
-          }
-        }
-        for(i=0;i<snakesAndLadders.ladders.length;i++){
-          if(value == snakesAndLadders.ladders[i].start){
-            flag = 1;
-            assert.isAbove(checkPos,value,'It is a ladder');
-            expect(checkPos).to.equal(snakesAndLadders.ladders[i].end);
-            console.log('This is a ladder');
-          }
-        }
-        if(!flag){
-          expect(checkPos).to.equal(value);
-          console.log('Not a snake or ladder');
-        }
+    var testData = [
+      {input:50, output:false},
+      {input:100, output:true},
+      {input:105, output:true},
+    ];
+    testData.forEach(function(value){
+      it('check for winner must return true when position is greater than 100',function(){
+        console.log(value);
+        expect(snakesAndLadders.checkForWinner(value.input)).to.equal(value.output); 
+      });
+    });
+  });
+  describe('Find Pos', function(){
+    var testData = [
+      {input:2, output:{newPos:37, msg:"Climb up the ladder"}},
+      {input:87, output:{newPos:15, msg:"A snake bit you"}},
+      {input:50, output:{newPos:50, msg:"no snake or ladder"}}
+    ];
+    testData.forEach(function(value){
+      it('find pos must correctly identify a cell as snake, ladder or neither',function(){
+        console.log(value);
+        assert.deepEqual(snakesAndLadders.findPos(value.input),value.output);
       });
     });
   });

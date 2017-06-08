@@ -3,6 +3,10 @@ var snakesAndLadders = {
     this.start = startPoint;
     this.end = endPoint;
   },
+  result: function (newPos, msg){
+    this.newPos = newPos;
+    this.msg = msg;
+  },
   init: function () {
 
     this.snakes = [
@@ -25,6 +29,60 @@ var snakesAndLadders = {
     this.myMap = new Map();
     this.makeMap();
   },
+  startGame: function() {
+    this.init();
+    this.enableBtn("roll1");
+    this.enableBtn("roll2");
+  },
+  takeTurn: function (buttonId) {
+    var x = this.rollDice();
+    if(buttonId == "roll1"){
+      var divId = "status1";
+      var diceId = "position1";
+      var curPosId = "pos1";
+      var prevPosId = "oldpos1";
+      var winnerId = "Player 1";
+      var oppBtnId = "roll2";
+    }
+    else {
+      var divId = "status2";
+      var diceId = "position2";
+      var curPosId = "pos2";
+      var prevPosId = "oldpos2";
+      var winnerId = "Player 2";
+      var oppBtnId = "roll1";
+    }
+    this.printMsg(x, diceId);
+    var prevPos = Number(document.getElementById(curPosId).innerHTML);
+    this.printMsg(prevPos, prevPosId);
+    var curPos = prevPos + x;
+    var returnedResult = this.findPos(curPos);
+    var newPos = returnedResult.newPos;
+    var posType = returnedResult.msg;
+    this.printMsg(posType, divId);
+    this.printMsg(newPos, curPosId);
+    this.disableBtn(buttonId);
+    this.enableBtn(oppBtnId);
+    var winner = this.checkForWinner(newPos);
+    if(winner){
+      this.printMsg(winnerId, "winner");
+      this.disableBtn("roll1");
+      this.disableBtn("roll2");
+    }
+  },
+  findPos: function (currPos) {
+    var foundPos = this.myMap.get(currPos);
+    //console.log(foundPos);
+    if(foundPos) {
+      if(foundPos.end > currPos){
+        return new this.result(foundPos.end, "Climb up the ladder");
+      }
+      else{
+        return new this.result(foundPos.end, "A snake bit you");
+      }
+    }
+    return new this.result(currPos, "no snake or ladder");
+   },
   printMsg: function (msg, elemId) {
     document.getElementById(elemId).innerHTML = msg;
   },
@@ -46,80 +104,11 @@ var snakesAndLadders = {
   disableBtn: function (buttonId) {
     document.getElementById(buttonId).disabled = true;
   },
-  takeTurn: function (buttonId, no, x) {
-
-    this.printMsg(x, "position" + no);
-    var cp1 = Number(document.getElementById("pos" + no).innerHTML);
-    this.printMsg(cp1, "oldpos" + no);
-    var newPos = this.findPos(cp1 + x, buttonId);
-    this.printMsg(newPos, "pos" + no);
-    if (no == 1) {
-
-      this.enableBtn("roll" + 2);
-
-    }
-    else {
-      this.enableBtn("roll" + 1);
-    }
-    this.disableBtn("roll" + no);
-    this.checkForWinner(newPos, buttonId);
-  },
-  turn: function (buttonId) {
-    this.init();
-    var x = this.rollDice();
-
-    if (buttonId == "roll1") {
-      this.takeTurn(buttonId, 1, x);
-    }
-    else {
-      this.takeTurn(buttonId, 2, x);
-    }
-  },
-  checkForWinner: function (pos, buttonId) {
-
+  checkForWinner: function (pos) {
     if (pos >= 100) {
-      if (buttonId == "roll1") {
-        this.printMsg("Player 1", "winner");
-        this.disableBtn("roll1");
-        this.disableBtn("roll2");
-      }
-      else {
-        this.printMsg("Player 2", "winner");
-        this.disableBtn("roll1");
-        this.disableBtn("roll2");
-      }
+      return true;
     }
-
-  },
-  findPos: function (currPos, buttonId) {
-    if (buttonId == "roll1") {
-      var divId = "status1";
-
-    }
-    else {
-      var divId = "status2";
-
-    }
-
-    var found_pos = this.myMap.get(currPos);
-    if (found_pos) {
-      newPos = found_pos.end;
-      if (newPos < currPos) {
-        //snake
-        //this.printMsg("Snake bit you", divId);
-
-      }
-      else {
-        //ladder
-        //this.printMsg("climb up the ladder", divId);
-
-      }
-      return newPos;
-    }
-   //this.printMsg("no snake or ladder", divId);
-    return currPos;
-
-
+    return false;
   }
 };
 
