@@ -3,10 +3,6 @@ var snakesAndLadders = {
     this.start = startPoint;
     this.end = endPoint;
   },
-  result: function (newPos, msg){
-    this.newPos = newPos;
-    this.msg = msg;
-  },
   init: function () {
 
     this.snakes = [
@@ -75,13 +71,22 @@ var snakesAndLadders = {
     //console.log(foundPos);
     if(foundPos) {
       if(foundPos.end > currPos){
-        return new this.result(foundPos.end, "Climb up the ladder");
+        return {
+          newPos: foundPos.end,
+          msg: 'Climb up the ladder'
+        }
       }
       else{
-        return new this.result(foundPos.end, "A snake bit you");
-      }
+        return {
+          newPos: foundPos.end,
+          msg: 'A snake bit you'
+        }
+     }
     }
-    return new this.result(currPos, "no snake or ladder");
+    return {
+      newPos: currPos, 
+      msg:'no snake or ladder'
+    }
    },
   printMsg: function (msg, elemId) {
     document.getElementById(elemId).innerHTML = msg;
